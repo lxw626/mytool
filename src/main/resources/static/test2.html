@@ -1,0 +1,171 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+    <link href="https://cdn.bootcss.com/extjs/6.0.0/classic/theme-classic/resources/theme-classic-all.css"
+          rel="stylesheet">
+    <script src="https://cdn.bootcss.com/extjs/6.0.0/ext-all.js"></script>
+    <script type="text/javascript">
+        Ext.onReady(function(){
+            var itemTab = new Ext.TabPanel({
+                activeTab:0,
+                frame:true,
+                border:false,
+                plain:true,
+                deferredRender:false,
+                autoHeight:true,
+                items:
+                    [{
+                        xtype:'form',
+                        title: '测试1',
+                        id:'itemForm1',
+                        autoHeight:true,
+                        name:'itemForm1'
+                    },{
+                        xtype:'form',
+                        title: '测试2',
+                        id:'itemForm2',
+                        autoHeight:true,
+                        name:'itemForm2'
+                    }]
+            });
+
+            var item2 = new Ext.form.FormPanel({
+                frame:true,
+                buttonAlign :'center',
+                labelAlign :'right',
+                items:
+                    [{
+                        layout:'column',
+                        items:[{
+                            columnWidth:.5,
+                            layout: 'form',
+                            items: [
+                                {
+                                    xtype:'textfield',
+                                    fieldLabel: "<font color='red'>*</font>测试21",
+                                    id:'test21',
+                                    name: 'test21',
+                                    width :100
+                                },
+                                {
+                                    xtype : 'compositefield',
+                                    fieldLabel: '测试22',
+                                    items :
+                                        [{
+                                            width:          100,
+                                            xtype:          'combo',
+                                            mode:           'local',
+                                            triggerAction : 'all',
+                                            forceSelection: true,
+                                            editable:       false,
+                                            name:           'test22',
+                                            value:          '是',
+                                            displayField:   'name',
+                                            valueField:     'value',
+                                            store:new Ext.data.JsonStore({
+                                                fields : ['name', 'value'],
+                                                data   : [
+                                                    {name : '是',  value: '是'},
+                                                    {name : '否',  value: '否'}
+                                                ]
+                                            })
+                                        }]
+                                }
+                            ]
+                        },{
+                            columnWidth:.5,
+                            layout: 'form',
+                            items: [
+                                {
+                                    xtype:'textfield',
+                                    fieldLabel: "<font color='red'>*</font>测试23",
+                                    id:'test23',
+                                    name: 'test23',
+                                    width :100
+                                },
+                                {
+                                    xtype:'textfield',
+                                    fieldLabel: "<font color='red'>*</font>测试24",
+                                    id:'test24',
+                                    name: 'test24',
+                                    width :100
+                                }
+                            ]
+                        }]
+                    }]
+            });
+
+            var item1 = new Ext.form.FormPanel({
+                frame:true,
+                buttonAlign :'center',
+                labelAlign :'right',
+                items:
+                    [{
+                        layout:'column',
+                        items:[{
+                            columnWidth:.5,
+                            layout: 'form',
+                            items: [
+                                {
+                                    xtype:'textfield',
+                                    fieldLabel: "<font color='red'>*</font>测试11",
+                                    id:'test11',
+                                    name: 'test11',
+                                    width :100
+                                },
+                                {
+                                    xtype : 'compositefield',
+                                    fieldLabel: '测试22',
+                                    items :
+                                        [{
+                                            width:          100,
+                                            xtype:          'combo',
+                                            mode:           'local',
+                                            triggerAction : 'all',
+                                            forceSelection: true,
+                                            editable:       false,
+                                            name:           'test12',
+                                            value:          '是',
+                                            displayField:   'name',
+                                            valueField:     'value',
+                                            store:new Ext.data.JsonStore({
+                                                fields : ['name', 'value'],
+                                                data   : [
+                                                    {name : '是',  value: '是'},
+                                                    {name : '否',  value: '否'}
+                                                ]
+                                            })
+                                        }]
+                                }
+                            ]
+                        },{
+                            columnWidth:.5,
+                            layout: 'form',
+                            items: [
+                                {
+                                    xtype:'textfield',
+                                    fieldLabel: "<font color='red'>*</font>测试13",
+                                    id:'test13',
+                                    name: 'test13',
+                                    width :100
+                                },
+                                {xtype:'textfield',
+                                    fieldLabel: "<font color='red'>*</font>测试14",
+                                    id:'test14',
+                                    name: 'test14',
+                                    width :100
+                                }
+                            ]
+                        }]
+                    }]
+            });
+            itemTab.render('item_tab');
+            item1.render('itemForm1');
+            item2.render('itemForm2');
+        });
+    </script>
+</head>
+<body>
+
+</body>
+</html>

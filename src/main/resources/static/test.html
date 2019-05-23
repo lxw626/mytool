@@ -1,0 +1,48 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+    <link href="https://cdn.bootcss.com/extjs/6.0.0/classic/theme-classic/resources/theme-classic-all.css"
+          rel="stylesheet">
+    <script src="https://cdn.bootcss.com/extjs/6.0.0/ext-all.js"></script>
+    <script type="text/javascript">
+        Ext.onReady(function () {
+            var mytable = new Ext.TabPanel({
+                renderTo: Ext.getBody(),
+                width: 800,
+                height: 400,
+                activeTab: 0,//激活的页数
+                frame: true, //出现渲染的边框
+                tabIndex:1,
+
+                items: [
+                    {
+                        width: 800,
+                        height: 400,
+                        xype: 'panel',
+                        title: "tab0",
+                    },
+                ],
+                buttons: [
+                    {
+                        text: 'AddTab',
+                        handler:function(){
+                            mytable.add({
+                                title: "newtab"+mytable.tabIndex,
+                                id:"newtab"+mytable.tabIndex,
+                                html: "newtab"+mytable.tabIndex,
+                                closable: true
+                            });
+                            mytable.setActiveTab("newtab"+mytable.tabIndex);
+                            mytable.tabIndex = mytable.tabIndex+1;
+                        }
+                    },
+                ]
+
+            });
+        })
+    </script>
+</head>
+<body>
+
+</body>
+</html>
