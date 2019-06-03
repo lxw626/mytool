@@ -7,15 +7,24 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class ExcelUtil {
+    /**
+     * 显示空行显示空列,数据保持与原表一致
+     * @param file
+     * @param sheetIndex
+     * @return
+     * @throws Exception
+     */
+    public static List<List<String>> excel2List(File file, int sheetIndex) throws Exception {
+        return excel2List(file, sheetIndex,true,true);
+    }
     public static List<List<String>> excel2List(File file, int sheetIndex,boolean showEmptyRow,boolean showEmptyCell) throws Exception {
 //        解析结果,二维数组
         List<List<String>> listRows = new ArrayList<>();
@@ -70,7 +79,7 @@ public class ExcelUtil {
     }
 
     /**
-     * 导出Excel
+     * 生成Excel对象
      * @param sheetName sheet名称
      * @return
      */
@@ -119,5 +128,26 @@ public class ExcelUtil {
             }
         }
         return wb;
+    }
+    public static void output2Loacl(HSSFWorkbook book,File file){
+//        File file=new File("d:\\poi\\");
+        OutputStream stream=null;
+        try {
+//            stream = new FileOutputStream(new File(file, "机构客户信息表_"+System.currentTimeMillis()+".xls"));
+            stream = new FileOutputStream(file);
+            book.write(stream);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally{
+            if(stream != null);
+            try {
+                stream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 }

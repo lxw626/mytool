@@ -13,6 +13,7 @@ public class MyDataSource {
     static DruidDataSource testDataSource;
     static DruidDataSource testDDDataSource;
     static DruidDataSource moniDataSource;
+    static DruidDataSource scDataSource;
     static DruidDataSource localhostMysqlDataSource;
     static{
         //测试业务数据库
@@ -27,18 +28,24 @@ public class MyDataSource {
         testDDDataSource.setUsername("auth");
         testDDDataSource.setPassword("auth");
         testDDDataSource.setUrl("jdbc:oracle:thin:@//10.188.26.57:1521/dddldbt");
-        //模拟数据库
-        /*moniDataSource = new DruidDataSource();
+        //模拟业务数据库
+        moniDataSource = new DruidDataSource();
         moniDataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
-        moniDataSource.setUsername("auth");
-        moniDataSource.setPassword("auth");
-        moniDataSource.setUrl("jdbc:oracle:thin:@//10.188.26.73:1521/dddldbt");*/
+        moniDataSource.setUsername("pestest");
+        moniDataSource.setPassword("pestest");
+        moniDataSource.setUrl("jdbc:oracle:thin:@//10.88.254.19:1521/tldbd");
         //本地mysql数据库
         localhostMysqlDataSource = new DruidDataSource();
         localhostMysqlDataSource.setDriverClassName("com.mysql.jdbc.Driver");
         localhostMysqlDataSource.setUsername("root");
         localhostMysqlDataSource.setPassword("root");
         localhostMysqlDataSource.setUrl("jdbc:mysql://localhost:3306/mytool?useUnicode=true&characterEncoding=UTF-8&useSSL=true");
+        //生产业务数据库
+        scDataSource = new DruidDataSource();
+        scDataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
+        scDataSource.setUsername("tlpesm");
+        scDataSource.setPassword("tlpesm");
+        scDataSource.setUrl("jdbc:oracle:thin:@//10.188.18.215:1521/tldbp");
     }
     public static DataSource getTestDataSource() {
         return testDataSource;
@@ -55,4 +62,7 @@ public class MyDataSource {
         return localhostMysqlDataSource;
     }
 
+    public static DruidDataSource getScDataSource() {
+        return scDataSource;
+    }
 }

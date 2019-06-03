@@ -40,6 +40,10 @@ public class GConfig {
     public static final String USERNAME = "pestest";
     public static final String PASSWORD = "pestest";
 
+//    public static final String URL = "jdbc:oracle:thin:@//10.188.26.57:1521/dddldbt";
+//    public static final String USERNAME = "auth";
+//    public static final String PASSWORD = "auth";
+
     /*public static final String URL = "jdbc:oracle:thin:@//localhost:1521/mldn";
     public static final String USERNAME = "scott";
     public static final String PASSWORD = "tiger";*/

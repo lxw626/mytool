@@ -1,5 +1,5 @@
 package com.lxw.mytool.config;
 
 public class GlobalConfig {
-    public static String loggerPath = "C:\\Users\\lixiewen\\Desktop\\console\\";
+    public static String loggerPath = "D:\\360MoveData\\Users\\lixiewen\\Desktop\\console\\";
 }

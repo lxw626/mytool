@@ -2,11 +2,13 @@ package com.lxw.mytool.util;
 
 
 import com.lxw.mytool.config.GConfig;
+import com.lxw.mytool.config.GlobalConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
+import java.io.PrintWriter;
 import java.sql.*;
 import java.util.*;
 
@@ -320,7 +322,7 @@ public class DBUtil {
     public static int[] dataSyn(DataSource sourceDS,String sourceTN,DataSource destDS,String destTN){
         List<Map<String, Object>> maps = find(sourceDS, sourceTN);
         //清空目标表
-        emptyTable(destDS,destTN);
+//        emptyTable(destDS,destTN);
         //如果源表里没有数据,返回即可
         if(maps.size()<1){
             return null;
@@ -350,8 +352,8 @@ public class DBUtil {
      */
     public static void emptyTable(DataSource ds,String tableName){
         JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-        String emptySql = "TRUNCATE TABLE "+tableName;
-        jdbcTemplate.execute(emptySql);
+//        String emptySql = "TRUNCATE TABLE "+tableName;
+//        jdbcTemplate.execute(emptySql);
     }
     public static void sysnTable(DataSource sourceDS,String sourceTN,DataSource destDS){
         String dropTableSql = "drop table "+sourceTN;
@@ -362,11 +364,13 @@ public class DBUtil {
 //        }catch (Exception e){
 //
 //        }
+        System.out.println(createTableSql);
         jdbcTemplate.execute(createTableSql);
     }
     public static void sysnTable(DataSource sourceDS,List<String> tableNames,DataSource destDS){
         List<String> sqlList = new ArrayList<>();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(destDS);
+        PrintWriter pw = IOUtil.getPrintWriter(GlobalConfig.loggerPath + "authsql.txt",true);
         for (String tableName : tableNames) {
             String createTableSql = getCreateTableSql(sourceDS, tableName);
             String dropTableSql = "DROP TABLE IF EXISTS `"+tableName+"`";
@@ -374,11 +378,14 @@ public class DBUtil {
 //            sqlList.add(createTableSql);
             try {
                 jdbcTemplate.execute(createTableSql);
+                pw.println(createTableSql);
             }catch (Exception e){
                 System.err.println("生成"+tableName+"表时出错啦");
                 e.printStackTrace();
             }
         }
+        pw.flush();
+        pw.close();
 //        String[] sqlArray = new String [sqlList.size()];
 //        sqlArray = sqlList.toArray(sqlArray);
 //        jdbcTemplate.batchUpdate(sqlArray);

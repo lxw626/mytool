@@ -35,7 +35,25 @@ public class HttpUtil {
         HttpGet httpget = new HttpGet(url);
         httpget.setConfig(requestConfig);
         try (CloseableHttpResponse response = httpClient.execute(httpget)) {
+            HttpEntity entity = response.getEntity();
             return EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+        }
+    }
+    // get请求
+    public static String get(String url,String cookie) throws IOException {
+        HttpGet httpget = new HttpGet(url);
+        httpget.setConfig(requestConfig);
+        httpget.setHeader("Cookie",cookie);
+        try (CloseableHttpResponse response = httpClient.execute(httpget)) {
+            HttpEntity entity = response.getEntity();
+            return EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+        }
+    }
+    public static CloseableHttpResponse getX(String url) throws IOException {
+        HttpGet httpget = new HttpGet(url);
+        httpget.setConfig(requestConfig);
+        try (CloseableHttpResponse response = httpClient.execute(httpget)) {
+            return response;
         }
     }
 
@@ -44,6 +62,18 @@ public class HttpUtil {
         HttpEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
         HttpPost httpPost = new HttpPost(url);
         httpPost.setEntity(entity);
+        httpPost.setConfig(requestConfig);
+        try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+            return EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+        }
+    }
+    // post请求
+    public static String post(String url, String json,String cookis) throws IOException {
+        HttpEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setEntity(entity);
+        httpPost.setHeader("Cookie", cookis);
+        httpPost.setHeader("Accept", "application/json, text/javascript, */*; q=0.01");
         httpPost.setConfig(requestConfig);
         try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
             return EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
