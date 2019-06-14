@@ -7,12 +7,12 @@ Ext.define('connect.ConnectView', {
     requires: [
         'connect.ConnectQueryForm',
         'connect.ConnectList',
-        // 'ConnectController',
-        // 'ConnectWin',
-        // 'ConnectWinController',
+        'connect.ConnectController',
+        'connect.ConnectWin',
+        'connect.ConnectWinController',
     ],
 
-    // controller: 'connectController',
+    controller: 'connectController',
 
     dockedItems: [
         {

@@ -10,59 +10,50 @@ Ext.define('MainController', {
 	routes : {
 		':id' : {
 			action : 'handleRoute',// 执行跳转
-			before : 'beforeHandleRoute'// 路由跳转前操作
+			// before : 'beforeHandleRoute'// 路由跳转前操作
 		}
 	},
 
 	onMenuItemClick : function(view, record, item, index, event, options){
-		if (record) {
-            var mainPanel = this.lookupReference('mainPanel')
-            var xtype = record.data.resPageUrl;
-            var className = xtype.charAt(0).toUpperCase() + xtype.slice(1)
-            var packageName = record.data.resPackage;
-            var menuName = record.data.resName;
-            var components =  mainPanel.query(xtype);
-            if(components.length >0){
-                mainPanel.setActiveTab(components[0]);
-			}else{
-                Ext.Loader.setConfig({enabled:true});
-                Ext.syncRequire(packageName+"."+className,function(){
-                    var newTab ={
-                        xtype:xtype,
-                        title :  menuName,
-                        closable : true,
-                    }
-                    newTab = mainPanel.add(newTab);
-                    mainPanel.setActiveTab(newTab);
-				});
-			}
-		}
+        var me = this;
+        if (record) {
+            me.redirectTo(record.getId(),true);
+        }
 	},
-	addTabPanel : function(targetPanel,xtype) {
-		var newTab = targetPanel.items.findBy(function(tab) {
-					return tab.title === menuItem.get('resName');
-				});
-
-		if (!newTab) {
-            // var tabObject = {
-            //     xtype : menuItem.get('resPageUrl'),
-            //     closable : true,
-            //     title : menuItem.get('resName'),
-            //     className : menuItem.get('resPageUrl'),
-            //     resParams : menuItem.get('resParams'),
-            //     resId : menuItem.get('resId'),
-            //     resPackage:menuItem.get('resPackage'),
-            //     resSid : menuItem.get('sid')
-            // }
-            Ext.syncRequire(["menu.MenuView"]);
-            var tabObject ={
-            	xtype:'menuView',
-                title :  menuItem.get('resName'),
-                closable : true,
-			}
-			newTab = targetPanel.add(tabObject);
-		}
-		targetPanel.setActiveTab(newTab);
+    handleRoute: function (id) {
+        var me = this;
+		var menuTree = me.lookupReference('menuTree');
+		var mainPanel = me.lookupReference('mainPanel');
+		var store = menuTree.getStore();
+        var menuItem = store.getNodeById(id);
+        //响应路由，左侧树定位到相应节点
+        var parentNode = menuItem.parentNode;
+		menuTree.getSelectionModel().select(menuItem);
+		menuTree.getView().expand(parentNode);
+		menuTree.getView().focusNode(menuItem);
+		me.addTabPanel(mainPanel,menuItem);
+    },
+	addTabPanel : function(mainPanel,menuItem) {
+        var xtype = menuItem.data.resPageUrl;
+        var menuName = menuItem.data.resName;
+        var pageName = menuItem.data.resPackage;
+        var className = xtype.charAt(0).toUpperCase() + xtype.slice(1)
+        var components =  mainPanel.query(xtype);
+        if(components.length >0){
+            mainPanel.setActiveTab(components[0]);
+        }else{
+            Ext.Loader.setConfig({enabled:true});
+            Ext.syncRequire(pageName+"."+className,function(){
+                var newTab ={
+                    xtype:xtype,
+                    title :  menuName,
+					resSid:menuItem.id,
+                    closable : true,
+                }
+                newTab = mainPanel.add(newTab);
+                mainPanel.setActiveTab(newTab);
+            });
+        }
 	},
 	
 	onMainRender : function(component, options) {
@@ -272,30 +263,8 @@ Ext.define('MainController', {
 		});
 	},
 	
-	onCollapseAllBtnClick: function(button, e, options) {
-		var me = this;
-		var menuTree = me.lookupReference('menuTree');
-		menuTree.collapseAll();
-	},
-	onExpandAllBtnClick: function(button, e, options) {
-		var me = this;
-		var menuTree = me.lookupReference('menuTree');
-		menuTree.expandAll();
-	},
-	onFindNodeBtnClick: function(button, e, options) {
-		var me = this;
-		var menuTree = me.lookupReference('menuTree');
-		var nodeText = me.lookupReference('treeNodeText');
-		var nodeTextValue = nodeText.value;
-		if(!Ext.isEmpty(nodeTextValue)) {
-			me.clearSearchResult(menuTree.getRootNode(), nodeTextValue, menuTree);
-			menuTree.collapseAll();
-			me.childrenSearchRecursively(menuTree.getRootNode(), nodeTextValue, menuTree);
-		} else {
-			me.clearSearchResult(menuTree.getRootNode(), nodeTextValue, menuTree);
-			//menuTree.collapseAll();
-		}
-	},
+
+
     //查找节点并展开
     childrenSearchRecursively:function(node, searchStr, tree) {
     	var me = this;
@@ -338,23 +307,7 @@ Ext.define('MainController', {
 			}
 		}
     },
-    mainTabChange:function(tabPanel, newCard, oldCard, eOpts){
-    	var url = "system/operation-page/addBatchFromJson.action";
-    	var jsonData="";
-    	if(newCard.resId==null || newCard.resId==""){
-    		   jsonData={'pageId':'Main' ,'pageName':newCard.title};
-    	}else{
-    		   jsonData={'pageId':newCard.resId ,'pageName':newCard.title};
-    	}
-   	  
-   	    Ext.Ajax.request({
-			method : 'POST',
-			url : url,
-			jsonData : jsonData,
-			params:{},
-			async : true});
-			
-    },
+
     /**
      * 当点击tab标题改变时，使左侧菜单栏焦点跟随tab改变
      * @param {} tabPanel
@@ -363,18 +316,14 @@ Ext.define('MainController', {
      * @param {} eOpts
      * wangfei 2019/04/10
      */
-    onMainPanelTabChange : function(tabPanel, newCard, oldCard, eOpts){
-
-    	var me = this;
+    mainPanelTabChange : function(tabPanel, newCard, oldCard, eOpts){
     	var id = newCard.resSid;
     	if (id) {
-			var me = this, 
-	        menuTree = me.lookupReference('menuTree'),
-	        store = menuTree.getStore();
-	        
+			var me = this;
+	        var menuTree = me.lookupReference('menuTree');
+	        var store = menuTree.getStore();
 	        me.recursionExpandMenu(id, store);
-	
-    	}	
+    	}
     },
     /**
      * 递归展开主子节点
@@ -383,17 +332,17 @@ Ext.define('MainController', {
      * wangfei 2019/04/10
      */
     recursionExpandMenu : function(id, store) {
-    	var me = this;
-    	menuItem = store.getNodeById(id);
-    	if (menuItem) {
-			me.handleRoute(id);
-		} else {		
-    		var rootNode = menuTree.getRootNode();
-			if (rootNode && rootNode.hasChildNodes()) {
-				rootNode.expand();
-		    	me.recursionExpandMenu(id, store);
-				store.load();
-			}
-		}
+        var me = this;
+        var menuItem = store.getNodeById(id);
+        if (menuItem) {
+            me.redirectTo(id,true);
+        } else {
+            var rootNode = store.getRootNode();
+            if (rootNode && rootNode.hasChildNodes()) {
+                rootNode.expand();
+                me.recursionExpandMenu(id, store);
+                store.load();
+            }
+        }
     }
 });

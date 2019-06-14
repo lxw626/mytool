@@ -18,4 +18,7 @@
             ]
         }
     ],
+    listeners:{
+        tabchange : 'mainPanelTabChange'
+    }
 });

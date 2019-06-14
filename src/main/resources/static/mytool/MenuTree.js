@@ -1,5 +1,6 @@
-var store = Ext.create('Ext.data.TreeStore', {
-    autoLoad: true,
+Ext.define('MenuModel', {
+    extend: 'Ext.data.TreeModel',
+    idProperty: 'sid',//方便根据id获取节点
     fields:[
         {name:'sid', type:'auto'},
         {name:'parentSid', type:'int'},
@@ -16,9 +17,15 @@ var store = Ext.create('Ext.data.TreeStore', {
         {name:'updatedBy', type:'string'},
         {name:'updatedDt', type:'date'},
         {name:'version', type:'int', critical:true}
-    ],
+    ]
+});
+
+
+var store = Ext.create('Ext.data.TreeStore', {
+    autoLoad: true,
+    model: 'MenuModel',
     root: {
-        expanded: false
+        expanded: true
     },
     proxy: {
         type:'ajax',

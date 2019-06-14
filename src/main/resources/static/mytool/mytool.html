@@ -8,12 +8,16 @@
           rel="stylesheet"/>
     <script src="/3Lib/Ext/classic/theme-neptune/theme-neptune-debug.js" type="text/javascript"></script>
 
+
+    <link href="/ext6/theme-classic-all.css" type="text/css" rel="stylesheet"/>
+    <script src="/ext6/ext-all.js" type="text/javascript"></script>
     <script type="text/javascript" src="/mytool/MainView.js"></script>
     <script type="text/javascript">
         Ext.onReady(function () {
-            Ext.Loader.setPath({ My: ".", });
-            Ext.create('MainView', {
-                renderTo: Ext.getBody(),
+            Ext.syncRequire(["util.Util"],function(){
+                Ext.create('MainView', {
+                    renderTo: Ext.getBody(),
+                });
             });
         });
     </script>

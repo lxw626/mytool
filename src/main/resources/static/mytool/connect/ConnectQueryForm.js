@@ -20,28 +20,28 @@ Ext.define('connect.ConnectQueryForm', {
 	
 	items:[
         {
-            name : 'DBType',
-			reference : 'DBType',
+            name : 'dbtype',
+			reference : 'dbtype',
 			fieldLabel : '数据库类型',
         },
         {
-            name : 'connectName',
-            reference : 'connectName',
+            name : 'connectname',
+            reference : 'connectname',
             fieldLabel : '连接名',
         },
         {
-            name : 'connectAddress',
-            reference : 'connectAddress',
+            name : 'connectaddress',
+            reference : 'connectaddress',
             fieldLabel : '地址',
         },
         {
-            name : 'connectPort',
-            reference : 'connectPort',
+            name : 'connectport',
+            reference : 'connectport',
             fieldLabel : '端口号',
         },
         {
-            name : 'userName',
-            reference : 'userName',
+            name : 'username',
+            reference : 'username',
             fieldLabel : '用户名',
         },
         {
@@ -68,14 +68,13 @@ Ext.define('connect.ConnectQueryForm', {
 				xtype:'button',
 				text:'查询',
 				margin : '0 2 0 0',
-				// handler:'storInQueryBtnClick',
+				handler:'connectQueryBtnClick',
 				formBind:true
 			},{
 				xtype:'button',
 				text:'重置',
 				margin : '0 0 0 2',
-				handler:'storInResetBtnClick'
-					
+				handler:'connectResetBtnClick'
 			},
 		]
 	}

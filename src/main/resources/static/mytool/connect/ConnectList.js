@@ -11,11 +11,11 @@ Ext.define('connect.ConnectList', {
         // 键盘导航， false则键盘操作无效
         enableKeyNav: true,
         // 选择模式 SINGLE, SIMPLE, 和 MULTI
-        mode: 'SINGLE',
+        mode: 'MULTI',
         // 点击checkbox框选中
-        checkOnly: false,
+        checkOnly: true,
         // 在表头显示全选checkbox框
-        showHeaderCheckbox: false,
+        showHeaderCheckbox: true,
         // 复选框选择模式Ext.selection.CheckboxModel
         selType: 'checkboxmodel',
         allowDeselect: true
@@ -35,7 +35,7 @@ Ext.define('connect.ConnectList', {
         {
             text: '数据库类型',
             filter: 'list',
-            dataIndex: 'DBType',
+            dataIndex: 'dbtype',
             align: 'center',
             flex: 1,
         },
@@ -44,14 +44,14 @@ Ext.define('connect.ConnectList', {
             filter: 'list',
             flex: 1,
             align: 'center',
-            dataIndex: 'connectName',
+            dataIndex: 'connectname',
         },
         {
             text: '地址',
             filter: 'list',
             width: 200,
             align: 'center',
-            dataIndex: 'connectAddress',
+            dataIndex: 'connectaddress',
         },
 
         {
@@ -59,14 +59,14 @@ Ext.define('connect.ConnectList', {
             align: 'center',
             filter: 'list',
             flex: 1,
-            dataIndex: 'connectPort'
+            dataIndex: 'connectport'
         },
         {
             text: '用户名',
             filter: 'list',
             flex: 1,
             align: 'center',
-            dataIndex: 'userName',
+            dataIndex: 'username',
         },
         {
             text: '密码',
@@ -85,29 +85,29 @@ Ext.define('connect.ConnectList', {
                 borderColor: '#9cc5f8',
                 borderStyle: 'solid'
             },
-            store: 'connectStore',
+            store:'connectStore',
             dock: 'top',
             displayInfo: true,
             items: [
                 {
                     xtype: 'button',
                     text: '新增',
-                    reference: 'menuAddBtn',
-                    // handler: 'menuAddBtnClick'
+                    reference: 'connectAddBtn',
+                    handler: 'connectAddBtnClick'
                 },
                 {
                      xtype:'button',
                     text:'修改',
                     formBind:true,
                     reference:'connectEditBtn',
-                    // handler:'connectEditBtnClick',
+                    handler:'connectEditBtnClick',
                 },
                 {
                      xtype:'button',
                     text:'删除',
                     formBind:true,
                     reference:'connectDeleteBtn',
-                    // handler:'connectDeleteBtnClick',
+                    handler:'connectDeleteBtnClick',
                 },
                 {
                     xtype: 'button',
@@ -126,12 +126,6 @@ Ext.define('connect.ConnectList', {
                         ]
                     })
                 }],
-           /* plugins: [
-                {
-                    ptype: 'pagingtoolbar'
-                }
-            ]*/
-
         }
     ]
 });

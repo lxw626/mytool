@@ -1,14 +1,14 @@
 Ext.define('connect.ConnectStore', {
     extend:'Ext.data.Store',
     autoLoad:true,
-    pageSize:15,
+    pageSize:3,
     fields:[
         {name:'sid', type:'auto'},
-        {name:'DBType', type:'string'},
-        {name:'connectName', type:'string'},
-        {name:'connectAddress', type:'string'},
-        {name:'connectPort', type:'string'},
-        {name:'userName', type:'string'},
+        {name:'dbtype', type:'string'},
+        {name:'connectname', type:'string'},
+        {name:'connectaddress', type:'string'},
+        {name:'connectport', type:'string'},
+        {name:'username', type:'string'},
         {name:'password', type:'string'},
     ],
     remoteSort:'true',
@@ -29,7 +29,7 @@ Ext.define('connect.ConnectStore', {
         reader:
         {
             type:'json',
-            rootProperty:'items',
+            rootProperty:'data.items',
             totalProperty:'data.totalProperty',
             successProperty:'meta.success',
             messageProperty:'meta.message'
