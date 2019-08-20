@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -148,6 +149,21 @@ public class ExcelUtil {
                 e.printStackTrace();
             }
         }
-
+    }
+    //发送响应流方法
+    public static void exportExcel(HttpServletResponse response,HSSFWorkbook wb,String fileName) {
+        try {
+            fileName = new String(fileName.getBytes(),"ISO8859-1");
+            response.setContentType("application/octet-stream;charset=ISO8859-1");
+            response.setHeader("Content-Disposition", "attachment;filename="+ fileName);
+            response.addHeader("Pargam", "no-cache");
+            response.addHeader("Cache-Control", "no-cache");
+            OutputStream os = response.getOutputStream();
+            wb.write(os);
+            os.flush();
+            os.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

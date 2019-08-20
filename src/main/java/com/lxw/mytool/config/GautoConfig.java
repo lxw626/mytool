@@ -217,8 +217,7 @@ public class GautoConfig {
     }
     public static String getFieldName(String columnName){
         String fieldName=null;
-        fieldName = StringUtil._x2X(columnName.toLowerCase()
-        );
+        fieldName = StringUtil._x2X(columnName.toLowerCase());
         return fieldName;
     }
     public static String getFieldType(String columnType,Integer precision,Integer scale){

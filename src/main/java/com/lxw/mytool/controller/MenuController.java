@@ -38,11 +38,14 @@ public class MenuController {
     public Response getMenus() {
         String sql  = "select * from menu";
         List<Map<String, Object>> menus = jdbcTemplate.queryForList(sql);
-        for (Map<String, Object> map : menus) {
+        List<Map<String, Object>> items = new ArrayList<>();
+        for(int i=0;i<menus.size();i++){
+            Map<String, Object> map = menus.get(i);
             map.put("leaf",true);
             map.put("connected",true);
+            items.add(map);
         }
-        return new Response().successItem(menus);
+        return new Response().successItem(items);
     }
     String menu = "{\n" +
             "    \"meta\": {\n" +

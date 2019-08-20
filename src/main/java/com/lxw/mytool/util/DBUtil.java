@@ -18,16 +18,18 @@ public class DBUtil {
 
     /**
      * 获取oracle数据库下的所有表名
+     * @param conn
+     * @param username
+     * @return
      */
-    public static List<String> getTableNamesForOracle() {
+    public static List<String> getTableNamesForOracle(Connection conn,String username) {
         List<String> tableNames = new ArrayList<>();
-        Connection conn = getConnection();
         ResultSet rs = null;
         try {
             //获取数据库的元数据
             DatabaseMetaData db = conn.getMetaData();
             //从元数据中获取到所有的表名,Oracle数据库的前两个参数为用户名但是必须大写！必须大写！必须大写！
-            rs = db.getTables(GConfig.USERNAME.toUpperCase(), GConfig.USERNAME.toUpperCase(), null, new String[]{"TABLE"});
+            rs = db.getTables(username.toUpperCase(),username.toUpperCase(), null, new String[]{"TABLE"});
             while (rs.next()) {
                 tableNames.add(rs.getString(3));
             }
@@ -42,6 +44,16 @@ public class DBUtil {
             }
         }
         Collections.sort(tableNames);
+        return tableNames;
+    }
+
+    /**
+     * 获取oracle数据库下的所有表名
+     */
+    public static List<String> getTableNamesForOracle() {
+        Connection conn = getConnection();
+        String username = GConfig.USERNAME;
+        List<String> tableNames = getTableNamesForOracle(conn, username);
         return tableNames;
     }
     /**
@@ -299,6 +311,7 @@ public class DBUtil {
      */
     public static int[] insert(DataSource ds, String tableName, List<Map<String, Object>> data){
         String insertSql = getInsertSql(data.get(0), tableName);
+        System.out.println(insertSql);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
         List<Object[]> params = new ArrayList<>();
         for (Map<String, Object> datum : data) {

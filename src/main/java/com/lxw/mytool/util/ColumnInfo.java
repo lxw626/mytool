@@ -4,23 +4,24 @@ package com.lxw.mytool.util;
 import com.lxw.mytool.config.GautoConfig;
 
 public class ColumnInfo {
+    //列名
     private String columnName;
+    //列类型
     private String columnType;
-    private String fieldName;
-    private String fieldType;
-    private String jdbcType;
+    //列注释
     private String columnComment;
-    private Integer precision;//总位数
-    private Integer scale;//小数位数
-    private Integer selected = 2;//临时测试
+    //如果为数字类型时数字的总位数
+    private Integer precision;
+    //如果为数字类型时数字的小数位数
+    private Integer scale;
 
-    public Integer getSelected() {
-        return selected;
-    }
+    //字段名
+    private String fieldName;
+    //字段类型
+    private String fieldType;
+    //jdbcType类型
+    private String jdbcType;
 
-    public void setSelected(Integer selected) {
-        this.selected = selected;
-    }
 
     public ColumnInfo() {
     }
@@ -38,7 +39,6 @@ public class ColumnInfo {
 
     public void setColumnName(String columnName) {
         this.columnName = columnName;
-        this.fieldName = GautoConfig.getFieldName(columnName);
     }
 
     public String getColumnType() {
@@ -61,7 +61,7 @@ public class ColumnInfo {
     }
 
     public String getFieldName() {
-        return fieldName;
+        return GautoConfig.getFieldName(columnName);
     }
 
     public String getFieldType() {
