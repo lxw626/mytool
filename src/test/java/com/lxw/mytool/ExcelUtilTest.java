@@ -1,4 +1,5 @@
 package com.lxw.mytool;
+import com.lxw.mytool.config.GlobalConfig;
 import com.lxw.mytool.config.MyDataSource;
 import com.lxw.mytool.util.ExcelUtil;
 import com.lxw.mytool.util.IOUtil;
@@ -14,15 +15,71 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class ExcelUtilTest {
-    File file = new File("C:\\Users\\lixiewen\\Desktop\\标准消耗数据导入\\标准消耗待处理数据.xlsx");
-//    File file = new File("C:\\Users\\lixiewen\\Desktop\\测试数据.xls");
+//    File file = new File("C:\\Users\\lixiewen\\Desktop\\标准消耗数据导入\\标准消耗待处理数据.xlsx");
+    File file = new File("D:\\360MoveData\\Users\\lixiewen\\Desktop\\标准消耗数据导入\\新元数据\\钢坯标准成本.xlsx");
     int sheetIndex = 0;
     JdbcTemplate testJdbcTemplate = new JdbcTemplate(MyDataSource.getTestDataSource());
+
+    @Test
+    public void cailiaoStor() throws Exception {
+        File file = new File("D:\\1工作\\材料库数据\\材料库数据.xlsx");
+        List<List<String>> rows = ExcelUtil.excel2List(file,1,false,true);
+        List<String> errinfo = new ArrayList<>();
+        for (int r=0;r<rows.size();r++) {
+            List<String> cells = rows.get(r);
+            for (int c=0;c<cells.size();c++) {
+                if(r>0&&c>=2){
+                    String cell = cells.get(c);
+                    String sql = "select * from VIEW_MD_ORG_STRUCTURE_INFO where COST_CENTER_CODE = ?";
+                    List<Map<String, Object>> maps = testJdbcTemplate.queryForList(sql, cell);
+                    if(maps.size()<1){
+                        errinfo.add("根据"+cell+"没有找到作业部信息");
+                    }else{
+                        Map<String, Object> map = maps.get(0);
+                        String plant_code = map.get("PLANT_CODE").toString();
+                        String plant_desc = map.get("PLANT_DESC").toString();
+                    }
+                }
+
+            }
+        }
+
+    }
+    @Test
+    public void updateCailiaoStorPlant() throws Exception {
+        JdbcTemplate moniJdbcTemplate = new JdbcTemplate(MyDataSource.getMoniDataSource());
+        String querySql = "SELECT * FROM MES_CL_STOR";
+        List<String> err = new ArrayList<>();
+        List<Map<String, Object>> maps = moniJdbcTemplate.queryForList(querySql);
+        if(maps.size()!=208){
+            System.out.println("查到了:"+maps.size()+"条数据");
+            return;
+        }
+        for (Map<String, Object> map : maps) {
+            Object sid = map.get("SID");
+            Object cost_center_code = map.get("COST_CENTER_CODE");
+            String findP = "select * from VIEW_MD_ORG_STRUCTURE_INFO where COST_CENTER_CODE = ?";
+            List<Map<String, Object>> maps1 = moniJdbcTemplate.queryForList(findP, cost_center_code);
+            if(maps1.size()<1){
+                err.add("没有找到该成本中心对应的作业部信息:"+cost_center_code.toString());
+            }else{
+                Map<String, Object> stringObjectMap = maps1.get(0);
+                Object plant_code = stringObjectMap.get("PLANT_CODE");
+                Object plant_desc = stringObjectMap.get("PLANT_DESC");
+                String sql = "UPDATE MES_CL_STOR SET PLANT_CODE = ?,PLANT_DESC = ? WHERE SID = ?";
+                int update = moniJdbcTemplate.update(sql, plant_code, plant_desc,sid);
+
+            }
+
+        }
+
+    }
 
     /**
      * excel转List<List<String>>以行为单位输出
@@ -45,6 +102,10 @@ public class ExcelUtilTest {
         System.out.println("一共读取到了:"+rows.size()+"条数据");
     }
 
+    /**
+     * 标准消耗管理数据整理平面坐标转网格)
+     * @throws Exception
+     */
     @Test
     public void contextLoads() throws Exception {
         String fileName = file.getName();
@@ -92,7 +153,7 @@ public class ExcelUtilTest {
                     }else if(r==1){
                         matCode.add(rc);
                     }else{
-                        if(c>0&&c<70){
+                        if(c>0&&c<78){
                             MatInfo matInfo = new MatInfo();
                             matInfo.setMatCode(matCode.get(c));
                             matInfo.setMatDesc(matDesc.get(c));
@@ -107,16 +168,43 @@ public class ExcelUtilTest {
                 }
             }
         }
+        PrintWriter pw = IOUtil.getPrintWriter(GlobalConfig.loggerPath + "test20190530.txt",true);
         for (MatInfo matInfo : matInfos) {
-            System.out.println(matInfo);
+            pw.println(matInfo);
+//            System.out.println(matInfo);
         }
+        pw.flush();
+        pw.close();
 //        for(int i=0;i<matDesc.size();i++){
 //            System.out.println(matDesc.get(i)+"\t"+matCode.get(i));
 //        }
     }
     @Test
+    public void updateUnit(){
+        String sql = "select distinct(MAT_NO) from MES_CX_DEPLETE";
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(MyDataSource.getTestDataSource());
+        List<Map<String, Object>> maps = jdbcTemplate.queryForList(sql);
+        String queryUnit = "select UNIT from MES_MD_MAT where MAT_NR = ?";
+        List<String> err = new ArrayList<>();
+        String update = "update mes_cx_deplete set UNIT = ? where mat_no=?";
+        for (Map<String, Object> map : maps) {
+            String mat_no = map.get("MAT_NO").toString();
+            try {
+                Map<String, Object> stringObjectMap = jdbcTemplate.queryForMap(queryUnit, mat_no);
+                jdbcTemplate.update(update,stringObjectMap.get("UNIT").toString(),mat_no);
+
+            }catch (Exception e){
+                err.add(mat_no);
+            }
+        }
+        for (String s : err) {
+            System.out.println(s);
+        }
+
+    }
+    @Test
     public void test1() throws Exception{
-        File f = new File("C:\\Users\\lixiewen\\Desktop\\标准消耗数据导入\\标准消耗待处理数据.xlsx");
+        File f = new File("D:\\360MoveData\\Users\\lixiewen\\Desktop\\标准消耗数据导入\\新元数据\\钢坯标准成本.xlsx");
         Object plant_code = "";
         Object plant_desc = "";
         Object scope_code = "";
@@ -174,7 +262,8 @@ public class ExcelUtilTest {
                 }
             result.append(sb.toString()+"\n");
             }
-        IOUtil.print2RunTxt(result.toString());
+        System.out.println(result.toString());
+//        IOUtil.print2RunTxt(result.toString());
     }
 }
 class MatInfo{

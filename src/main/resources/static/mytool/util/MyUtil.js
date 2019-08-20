@@ -1,4 +1,4 @@
-Ext.define('MyTool.util.Util', {
+Ext.define('MyTool.util.MyUtil', {
     statics:{
         showErrorMsg : function(text) {
             return Ext.MessageBox.show({
@@ -247,7 +247,7 @@ Ext.define('MyTool.util.Util', {
             // 此处将get方式改为Post方式提交，以解决此问题
             var exportForm = document.createElement("form");
             document.body.appendChild(exportForm);
-            exportForm.id = Math.round(new Date().getTime()+Math.random()*10000000000000000);;
+            exportForm.id = Math.round(new Date().getTime()+Math.random()*10000000000000000);
             exportForm.method = "POST";
             // exportForm.target = "_SELF";
             exportForm.action = url;

@@ -13,6 +13,7 @@ Ext.define('MainController', {
 			// before : 'beforeHandleRoute'// 路由跳转前操作
 		}
 	},
+    defaultToken : 'home',
 
 	onMenuItemClick : function(view, record, item, index, event, options){
         var me = this;

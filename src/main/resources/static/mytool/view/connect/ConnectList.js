@@ -1,4 +1,4 @@
-Ext.define('connect.ConnectList', {
+Ext.define('MyTool.view.connect.ConnectList', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.connectList',
     layout: 'fit',
@@ -6,7 +6,7 @@ Ext.define('connect.ConnectList', {
     region: 'center',
     autoScroll: true,
     columnLines: true,
-    store: Ext.create('connect.ConnectStore', {
+    store: Ext.create('MyTool.view.connect.ConnectStore', {
         storeId: 'connectStore'
     }),
     selModel: {
@@ -27,12 +27,13 @@ Ext.define('connect.ConnectList', {
         scrollOffset: 0,
         enableTextSelection: true
     },
-    columns: [{
-        xtype: 'rownumberer',
-        width: 50,
-        align: 'center',
-        text: '序号'
-    },
+    columns: [
+        {
+            xtype: 'rownumberer',
+            width: 50,
+            align: 'center',
+            text: '序号'
+        },
         {
             text: '数据库类型',
             filter: 'list',
@@ -76,7 +77,6 @@ Ext.define('connect.ConnectList', {
             flex: 1,
             dataIndex: 'password',
         }
-
     ],
     dockedItems: [{
         xtype: 'pagingtoolbar',
@@ -88,12 +88,13 @@ Ext.define('connect.ConnectList', {
         store: 'connectStore',
         dock: 'top',
         displayInfo: true,
-        items: [{
-            xtype: 'button',
-            text: '新增',
-            reference: 'connectAddBtn',
-            handler: 'connectAddBtnClick'
-        },
+        items: [
+            {
+                xtype: 'button',
+                text: '新增',
+                reference: 'connectAddBtn',
+                handler: 'connectAddBtnClick'
+            },
             {
                 xtype: 'button',
                 text: '修改',
@@ -114,13 +115,20 @@ Ext.define('connect.ConnectList', {
                     width: 50,
                     margin: '0 0 10 0',
                     floating: true,
-                    // renderTo: Ext.getBody(),
-                    items: [{
-                        text: '导出excel',
-                        listeners: {
-                            // click: 'connectExcelBtnClick'
+                    items: [
+                        {
+                            text: '导出Excel',
+                            listeners: {
+                                click: 'exportExcelBtnClick'
+                            }
+                        },
+                        {
+                            text: '导入Excel',
+                            listeners: {
+                                click: 'importExcelBtnClick'
+                            }
                         }
-                    }]
+                    ]
                 })
             }],
     }]

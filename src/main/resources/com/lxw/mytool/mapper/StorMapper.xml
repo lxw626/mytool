@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxw.mytool.mapper.StorMapper">
+	<resultMap id="BaseResultMap" type="com.lxw.mytool.entity.Stor">
+		<result column="SID" jdbcType="DECIMAL" property="sid" />
+		<result column="STOR_CODE" jdbcType="VARCHAR" property="storCode" />
+		<result column="STOR_DESC" jdbcType="VARCHAR" property="storDesc" />
+		<result column="PLANT_CODE" jdbcType="VARCHAR" property="plantCode" />
+		<result column="PLANT_DESC" jdbcType="VARCHAR" property="plantDesc" />
+		<result column="SCOPE_CODE" jdbcType="VARCHAR" property="scopeCode" />
+		<result column="SCOPE_DESC" jdbcType="VARCHAR" property="scopeDesc" />
+		<result column="COST_CENTER_CODE" jdbcType="VARCHAR" property="costCenterCode" />
+		<result column="COST_CENTER_DESC" jdbcType="VARCHAR" property="costCenterDesc" />
+		<result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy" />
+		<result column="CREATED_DT" jdbcType="DATE" property="createdDt" />
+		<result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy" />
+		<result column="UPDATED_DT" jdbcType="DATE" property="updatedDt" />
+		<result column="VERSION" jdbcType="DECIMAL" property="version" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		SID, STOR_CODE, STOR_DESC, PLANT_CODE, PLANT_DESC,
+		SCOPE_CODE, SCOPE_DESC, COST_CENTER_CODE, COST_CENTER_DESC, CREATED_BY,
+		CREATED_DT, UPDATED_BY, UPDATED_DT, VERSION
+	</sql>
+	<select id="find" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from MES_MD_STOR
+		<where>
+			<if test = "sid != null">
+				and SID = #{sid,jdbcType=DECIMAL}
+			</if>
+			<if test = "storCode != null and storCode!=''">
+				and STOR_CODE like  '%' || #{storCode,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test = "storDesc != null and storDesc!=''">
+				and STOR_DESC like  '%' || #{storDesc,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test = "plantCode != null and plantCode!=''">
+				and PLANT_CODE = #{plantCode,jdbcType=VARCHAR}
+			</if>
+			<if test = "plantDesc != null and plantDesc!=''">
+				and PLANT_DESC = #{plantDesc,jdbcType=VARCHAR}
+			</if>
+			<if test = "scopeCode != null and scopeCode!=''">
+				and SCOPE_CODE = #{scopeCode,jdbcType=VARCHAR}
+			</if>
+			<if test = "scopeDesc != null and scopeDesc!=''">
+				and SCOPE_DESC = #{scopeDesc,jdbcType=VARCHAR}
+			</if>
+			<if test = "costCenterCode != null and costCenterCode!=''">
+				and COST_CENTER_CODE = #{costCenterCode,jdbcType=VARCHAR}
+			</if>
+			<if test = "costCenterDesc != null and costCenterDesc!=''">
+				and COST_CENTER_DESC = #{costCenterDesc,jdbcType=VARCHAR}
+			</if>
+			<if test = "createdBy != null and createdBy!=''">
+				and CREATED_BY = #{createdBy,jdbcType=VARCHAR}
+			</if>
+			<if test = "createdDt != null">
+				and CREATED_DT = #{createdDt,jdbcType=DATE}
+			</if>
+			<if test = "updatedBy != null and updatedBy!=''">
+				and UPDATED_BY = #{updatedBy,jdbcType=VARCHAR}
+			</if>
+			<if test = "updatedDt != null">
+				and UPDATED_DT = #{updatedDt,jdbcType=DATE}
+			</if>
+			<if test = "version != null">
+				and VERSION = #{version,jdbcType=DECIMAL}
+			</if>
+			
+			<!-- lixiewen 2019/05/10 增加数据权限 -->
+			<if test="tlglPlantLb != null" >
+		       	AND PLANT_CODE IN 
+				<foreach collection="tlglPlantLb" index="index" item="item" open="(" separator="," close=")">
+		        	#{item,jdbcType=VARCHAR}      
+				</foreach>
+			</if>
+			<if test="tlglStorLb != null" >
+		       	AND STOR_CODE IN 
+				<foreach collection="tlglStorLb" index="index" item="item" open="(" separator="," close=")">
+		        	#{item,jdbcType=VARCHAR}      
+				</foreach>
+			</if>
+		</where>
+		ORDER BY
+		<if test="order != null">
+			${order}
+		</if>
+		<if test="order == null">
+			SID DESC
+		</if>
+	</select>
+
+</mapper>

@@ -1,4 +1,4 @@
-Ext.define('connect.ConnectQueryForm', {
+Ext.define('MyTool.view.connect.ConnectQueryForm', {
 	extend:'Ext.form.Panel',
 	alias:'widget.connectQueryForm',
 	layout:'fit', 
@@ -7,7 +7,7 @@ Ext.define('connect.ConnectQueryForm', {
 	   type:'table',
 	   columns:4
    	},
-   	title:'查询条件 xxx<span style="font-weight:500px;color:red;text-align:center;">测试单击事件</span>',
+   	title:'查询条件',
    	collapsible : true,
 	frame:true,
 	defaults : {

@@ -14,7 +14,7 @@ Ext.define('connect.ConnectController', {
     connectQueryBtnClick : function() {
         var matGrid = this.getMaingrid();
         var store = matGrid.getStore();
-        util.Util.postPageForm(this.lookupReference('connectQueryForm'), this.getMaingrid());
+        MyTool.util.Util.postPageForm(this.lookupReference('connectQueryForm'), this.getMaingrid());
         store.load({//加载
             callback:function(){//回调函数
 //				matGrid.headerCt.getGridColumns()[5].autoSize();
@@ -25,6 +25,9 @@ Ext.define('connect.ConnectController', {
     // 重置表单
     connectResetBtnClick : function(button) {
         this.lookupReference('connectQueryForm').getForm().reset();
+    },
+    mytest:function(button) {
+        alert("qqq");
     },
 
 
@@ -67,7 +70,7 @@ Ext.define('connect.ConnectController', {
                         jsonData:sids,
                         success:function (){
                             grid.getStore().reload();
-                            util.Util.showTipMsg('删除记录成功!');
+                            MyTool.util.Util.showTipMsg('删除记录成功!');
                         },
                         failure:function(){
                             Ext.Msg.show({
@@ -83,7 +86,7 @@ Ext.define('connect.ConnectController', {
 
 
         } else {
-            util.Util.showTipMsg('请选择待删除的记录!');
+            MyTool.util.Util.showTipMsg('请选择待删除的记录!');
             return;
         }
     },
@@ -120,12 +123,12 @@ Ext.define('connect.ConnectController', {
      */
     connectExcelBtnClick : function(button, evt){
         var form = this.lookupReference('connectQueryForm');
-        var formParams = Sgai.util.Util.getFormParams(form);
+        var formParams = MyTool.util.Util.getFormParams(form);
         var grid = this.lookupReference('connectList');
         var url ='lb/connect/exportExcel.action';
         formParams['excelName'] = "入库信息";
         formParams['excelTitle'] ='入库信息';
-        Sgai.util.Util.exportExcel(url, grid,formParams);
+        MyTool.util.Util.exportExcel(url, grid,formParams);
     },
 
     /**

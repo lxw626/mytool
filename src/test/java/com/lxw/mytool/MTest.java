@@ -1,8 +1,8 @@
 package com.lxw.mytool;
 
-import com.alibaba.druid.pool.DruidDataSource;
 import com.lxw.mytool.config.MyDataSource;
 import com.lxw.mytool.util.DBUtil;
+import com.lxw.mytool.util.IOUtil;
 import com.lxw.mytool.util.ThreeDESUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -12,149 +12,16 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.sql.DataSource;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.*;
 import java.util.*;
 
 public class MTest {
+    /**
+     * String对象的replace也是替换所有,
+     * 若要替换第一个需要用replaceFirst
+     */
     @Test
-    public void test1(){
-        String sql ="SELECT sid 主键,ename as 用户名,empno FROM MES_MD_PERSON";
-        System.out.println(this.getSql(sql));
-        sql ="SELECT sid 主键,ename as 用户名,empno FROM MES_MD_PERSON where " +
-                " {PLANT_CODE = [作业部]}" +
-                " {AND SCOPE_CODE = [作业区]}" +
-                " {AND IN_FACTORY_DATE >=  [开始时间]}  " +
-                " {AND IN_FACTORY_DATE  <= [结束时间 ]} " +
-                " and ename = 'reos' ";
-        System.out.println(this.getSql(sql));
-        sql ="SELECT sid 主键,ename as 用户名,empno FROM MES_MD_PERSON where " +
-                " {AND SCOPE_CODE = [作业区]}" +
-                " {AND IN_FACTORY_DATE >=  [开始时间]}  " +
-                " {AND IN_FACTORY_DATE  <= [结束时间 ]} " +
-                " and ename = 'reos' ";
-        System.out.println(this.getSql(sql));
-    }
-    private String getSql(String sql){
-        List<String> templateCondition = this.getTemplateCondition(sql);
-        if(templateCondition.size()<1){
-            return sql;
-        }
-        String plantCode = "ltb";
-        String scopeCode = "qt";
-        String matNr = "blf";
-        String matDesc = "布洛芬";
-        String startTime = "";
-        String endTime = "";
-        //第一步:去查sql前后的空格
-        sql = sql.trim();
-        for(String condition:templateCondition){
-            //作业部
-            if(condition.contains("作业部")){
-                if(this.isNotBlank(plantCode)){
-                    sql = sql.replace("作业部",plantCode);
-                }else{
-                    sql = sql.replace(condition,"");
-                }
-            }
-            //作业区
-            if(condition.contains("作业区")){
-                if(this.isNotBlank(scopeCode)){
-                    sql = sql.replace("作业区",scopeCode);
-                }else{
-                    sql = sql.replace(condition,"");
-                }
-            }
-            //物料编码
-            if(condition.contains("物料编码")){
-                if(this.isNotBlank(matNr)){
-                    sql = sql.replace("物料编码",matNr);
-                }else{
-                    sql = sql.replace(condition,"");
-                }
-            }
-            //物料描述
-            if(condition.contains("物料描述")){
-                if(this.isNotBlank(matNr)){
-                    sql = sql.replace("物料描述",matDesc);
-                }else{
-                    sql = sql.replace(condition,"");
-                }
-            }
-            //开始时间
-            if(condition.contains("开始时间")){
-                if(this.isNotBlank(startTime)){
-                    sql = sql.replace("开始时间",startTime);
-                }else{
-                    sql = sql.replace(condition,"");
-                }
-            }
-            //结束时间
-            if(condition.contains("结束时间")){
-                if(this.isNotBlank(startTime)){
-                    sql = sql.replace("结束时间",endTime);
-                }else{
-                    sql = sql.replace(condition,"");
-                }
-            }
-        }
-        sql = sql.replaceAll("\\{","");
-        sql = sql.replaceAll("}","");
-        sql = sql.replaceAll("\\[","");
-        sql = sql.replaceAll("]","");
-        if(sql.contains("WHERE")||sql.contains("where")){
-            String substring;
-            if(sql.contains("WHERE")){
-                substring = sql.substring(sql.indexOf("WHERE") + 5).trim();
-            }else{
-                substring = sql.substring(sql.indexOf("where") + 5).trim();
-            }
-            if(substring.startsWith("AND")){
-                sql = sql.replaceAll("AND","");
-            }
-            if(substring.startsWith("and")){
-                sql = sql.replaceAll("and","");
-            }
-        }
-
-        sql = sql.replaceAll("\\s{2,}"," ");
-        return sql;
-    }
-    private boolean isNotBlank(String str){
-        if(str != null && str.trim().length() > 0){
-            return true;
-        }
-        return false;
-    }
-
-    private List<String> getTemplateCondition(String sql){
-        List<String> conditions = new ArrayList<>();
-        if(!(sql.contains("WHERE")||sql.contains("where"))){
-            return conditions;
-        }
-        int startIndex = 0;
-        if(sql.contains("WHERE")){
-            startIndex = sql.indexOf("WHERE");
-        }
-        if(sql.contains("where")){
-            startIndex = sql.indexOf("where");
-        }
-        int endIndex = sql.lastIndexOf("}");
-        String substring = sql.substring(startIndex+5, endIndex+1);
-        String[] split = substring.split("}");
-        for (String aSplit : split) {
-            conditions.add(aSplit.trim() + "}");
-        }
-        return conditions;
-    }
-    @Test
-    public void test2(){
+    public void stringReplaceTest(){
         String str = "hello and hello";
         if(str.contains("and")){
             System.out.println("and");
@@ -165,8 +32,12 @@ public class MTest {
         System.out.println(str.replaceFirst("hello",""));
 
     }
+
+    /**
+     * 根据map生成插入sql
+     */
     @Test
-    public void test3(){
+    public void getInsertSqlTest(){
         Map<String,Object> data = new HashMap<>();
         data.put("name","张三");
         data.put("age",20);
@@ -175,27 +46,55 @@ public class MTest {
         System.out.println(insertSql);
 
     }
+
+    /**
+     * List与数组互转
+     * 特别注意List转数组时的类型
+     */
     @Test
     public void test4(){
-       /* String [] sss = {"111","222","333"};
-        this.ttt(sss);*/
-       List<String> hhh = new ArrayList<>();
-       hhh.add("aaa");
-        hhh.add("bbb");
-        hhh.add("ccc");
-        String[] a = new String [hhh.size()];
-        hhh.toArray(a);
-        System.out.println(a.length);
+       List<String> nameList = new ArrayList<>();
+        nameList.add("张三");
+        nameList.add("李四");
+        nameList.add("王五");
+        Object[] objects = nameList.toArray();
+//        运行时会报错ClassCastException
+//        String[] eobjects = (String[]) nameList.toArray();
+//        建议使用
+        String[] nameArray = nameList.toArray(new String [nameList.size()]);
+        List<String> names = Arrays.asList(nameArray);
 
     }
-    public void ttt(String ...args){
+
+    /**
+     * 可变参数的传入与接受
+     * 第一中传入多个参数
+     * 第二种传入一个数组
+     * 接受:将可变参数作为数组遍历即可
+     *
+     */
+    @Test
+    public void variableParamTest(){
+//        不传入参数
+        this.myPrintln();
+//        传入多个参数
+        this.myPrintln("张三","李四");
+//        传入一个数组
+        String [] params = new String[]{"java","python"};
+        this.myPrintln(params);
+
+    }
+
+    /**
+     * 可变参数的接受
+     * @param args
+     */
+    public void myPrintln(String ...args){
         for(String str:args){
             System.out.println(str);
         }
     }
-    public void  test5(){
-        String s = "AAAq/OAAHAAAAEDAAA";
-    }
+
     File file = new File("C:\\Users\\lixiewen\\Desktop\\物料测试数据.xlsx");
 
     @Test
@@ -236,65 +135,90 @@ public class MTest {
 
 
     }
+
+    /**
+     * 单点测试系统查询密码
+     * @throws Exception
+     */
     @Test
-    public void  testp() throws Exception {
-        String password = "12345611111";
-        String newPassword;
-//        newPassword =  MD5Util.string2MD5(password);
-        byte[] data = password.getBytes("UTF-8");
-        byte[] byteEncryptPassword = ThreeDESUtil.des3EncodeCBC(ThreeDESUtil.KEY, ThreeDESUtil.KEY_IV, data);
-        newPassword = new sun.misc.BASE64Encoder().encode(byteEncryptPassword);
-        System.out.println(newPassword);
-        String s = ThreeDESUtil.unEncryptPassword(newPassword);
-        System.out.println(s);
-//        System.out.println(ThreeDESUtil.unEncryptPassword("wvOd99n0V2o="));
-    }
-    @Test
-    public void  testhhh() throws Exception {
-        String sql = "SELECT LOGIN_ID,PASSWORD FROM SADP_AC_USER";
-        DruidDataSource testDDDataSource = MyDataSource.getTestDDDataSource();
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(testDDDataSource);
-        List<Map<String, Object>> maps = jdbcTemplate.queryForList(sql);
+    public void  findPassword() throws Exception {
+//        String loginId = "tladmin";
+        String loginId = "wenp0323";
+        String sql = "SELECT LOGIN_ID,PASSWORD FROM SADP_AC_USER WHERE LOGIN_ID = ? ";
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(MyDataSource.getScDanDianDataSource());
+//        JdbcTemplate jdbcTemplate = new JdbcTemplate(MyDataSource.getTestDDDataSource());
+        List<Map<String, Object>> maps = jdbcTemplate.queryForList(sql,loginId);
         for (Map<String, Object> map : maps) {
             String password = map.get("PASSWORD").toString();
             password = ThreeDESUtil.unEncryptPassword(password);
             System.out.println(map.get("LOGIN_ID").toString()+"\t"+password);
         }
     }
+
     @Test
-    public void testt() throws Exception {
-        String userName = "tladmin";
-        String password = "123456";
-        DataSource tlglAuthDataSource = MyDataSource.getTestDDDataSource();
-        Connection connection = tlglAuthDataSource.getConnection();
-        ResultSet resultSet = null;
-        String sql = "SELECT LOGIN_ID,PASSWORD FROM SADP_AC_USER WHERE LOGIN_ID = ?";
-        PreparedStatement preState = connection.prepareStatement(sql);
-        preState.setString(1, userName);
-        resultSet = preState.executeQuery();
+    public void testxx() throws Exception {
+        File file = new File("D:\\360MoveData\\Users\\lixiewen\\Desktop\\test22.html");
+        List<String> strings = IOUtil.readFileByLine(file);
+        String[] split = ss.split("\n");
         int i = 0;
-        String encodePassword = null;
-        while (resultSet.next()){
-            encodePassword = resultSet.getString("PASSWORD");
-            i++;
-        }
-        if(i==1){
-            String dencodePassword = ThreeDESUtil.unEncryptPassword(encodePassword);
-            if(password.equals(dencodePassword)){
-                System.out.println("解码后的密码为:"+dencodePassword);
+        PrintWriter pw = IOUtil.getPrintWriter("D:\\360MoveData\\Users\\lixiewen\\Desktop\\test22x.html");
+        for (String string : strings) {
+            if(string.trim().contains("<img")){
+                String substring = "<img src=\"/bl/findImage.action?";
+                String substring2 = "\" alt=\"\" />";
+                pw.println(substring+split[i]+substring2);
+                i++;
             }else{
-                System.out.println("账号或密码错误");
+                pw.println(string);
             }
-        }else if(i<1){
-            System.out.println("没有查到用户名");
-        }else{
-            System.out.println("用户名不唯一请联系管理员");
         }
+        pw.flush();
+        pw.close();
     }
-    @Test
-    public void dencodePasswordTest()throws Exception{
-        String encodePassword = "TNDBtK4ecJ7hxb1gLrxOag==";
-        String dencodePassword = ThreeDESUtil.unEncryptPassword(encodePassword);
-        System.out.println(dencodePassword);
-    }
+    String ss = "newFileName=20190610154214_129.png&fileType=image&fileName=image1.png\n" +
+            "newFileName=20190610154215_314.png&fileType=image&fileName=image2.png\n" +
+            "newFileName=20190610154215_528.png&fileType=image&fileName=image3.png\n" +
+            "newFileName=20190610154216_847.png&fileType=image&fileName=image4.png\n" +
+            "newFileName=20190610154217_686.png&fileType=image&fileName=image5.png\n" +
+            "newFileName=20190610154217_286.png&fileType=image&fileName=image6.png\n" +
+            "newFileName=20190610154217_570.png&fileType=image&fileName=image7.png\n" +
+            "newFileName=20190610154217_511.png&fileType=image&fileName=image8.png\n" +
+            "newFileName=20190610154217_438.png&fileType=image&fileName=image9.png\n" +
+            "newFileName=20190610154214_378.png&fileType=image&fileName=image10.png\n" +
+            "newFileName=20190610154214_305.png&fileType=image&fileName=image11.png\n" +
+            "newFileName=20190610154214_457.png&fileType=image&fileName=image12.png\n" +
+            "newFileName=20190610154214_531.png&fileType=image&fileName=image13.png\n" +
+            "newFileName=20190610154214_276.png&fileType=image&fileName=image14.png\n" +
+            "newFileName=20190610154214_884.png&fileType=image&fileName=image15.png\n" +
+            "newFileName=20190610154214_327.png&fileType=image&fileName=image16.png\n" +
+            "newFileName=20190610154215_704.png&fileType=image&fileName=image17.png\n" +
+            "newFileName=20190610154215_609.png&fileType=image&fileName=image18.png\n" +
+            "newFileName=20190610154215_485.png&fileType=image&fileName=image19.png\n" +
+            "newFileName=20190610154215_899.png&fileType=image&fileName=image20.png\n" +
+            "newFileName=20190610154215_232.png&fileType=image&fileName=image21.png\n" +
+            "newFileName=20190610154215_743.png&fileType=image&fileName=image22.png\n" +
+            "newFileName=20190610154215_834.png&fileType=image&fileName=image23.png\n" +
+            "newFileName=20190610154215_407.png&fileType=image&fileName=image24.png\n" +
+            "newFileName=20190610154215_984.png&fileType=image&fileName=image25.png\n" +
+            "newFileName=20190610154215_831.png&fileType=image&fileName=image26.png\n" +
+            "newFileName=20190610154215_875.png&fileType=image&fileName=image27.png\n" +
+            "newFileName=20190610154215_457.png&fileType=image&fileName=image28.png\n" +
+            "newFileName=20190610154215_863.png&fileType=image&fileName=image29.png\n" +
+            "newFileName=20190610154216_653.png&fileType=image&fileName=image30.png\n" +
+            "newFileName=20190610154216_408.png&fileType=image&fileName=image31.png\n" +
+            "newFileName=20190610154216_831.png&fileType=image&fileName=image32.png\n" +
+            "newFileName=20190610154216_417.png&fileType=image&fileName=image33.png\n" +
+            "newFileName=20190610154216_194.png&fileType=image&fileName=image34.png\n" +
+            "newFileName=20190610154216_648.png&fileType=image&fileName=image35.png\n" +
+            "newFileName=20190610154216_697.png&fileType=image&fileName=image36.png\n" +
+            "newFileName=20190610154216_437.png&fileType=image&fileName=image37.png\n" +
+            "newFileName=20190610154216_15.png&fileType=image&fileName=image38.png\n" +
+            "newFileName=20190610154216_51.png&fileType=image&fileName=image39.png\n" +
+            "newFileName=20190610154216_493.png&fileType=image&fileName=image40.png\n" +
+            "newFileName=20190610154216_755.png&fileType=image&fileName=image41.png\n" +
+            "newFileName=20190610154216_599.png&fileType=image&fileName=image42.png\n" +
+            "newFileName=20190610154216_211.png&fileType=image&fileName=image43.png\n" +
+            "newFileName=20190610154216_580.png&fileType=image&fileName=image44.png\n";
+
+
 }
